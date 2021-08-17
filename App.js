@@ -12,6 +12,58 @@ export default function App() {
 	const [data, setData] = useState([]);
 	const [error, setError] = useState(false);
   const [postStatus, setPostStatus] = useState('');
+  const [deleteStatus, setDeleteStatus] = useState('');
+  const [patchStatus, setPatchStatus] = useState('');
+
+  async function onPressAPIAll() {
+    try {
+      const promise1 = axios('https://reqres.in/api/users/1');
+      const promise2 = axios('https://reqres.in/api/users/2');
+      const [response1, response2] = await
+      axios.all([promise1, promise2]);
+
+      const arrayResponse = [];
+      arrayResponse.push(response1.data.data);
+      arrayResponse.push(response2.data.data);
+      setData(arrayResponse);
+    }
+    catch (err) {
+      setError(true);
+      console.log(err);
+    }
+  }
+
+  async function onPressAPIPatch() {
+    
+    const user = {
+      first_name: "Peter",
+      job_title: "Apostolo",
+    };
+
+    try {
+      const response = await
+      axios.patch('https://reqres.in/api/users', user);
+      setPatchStatus(response.status);
+      console.log(response);
+    }
+    catch (err) {
+      setError(true);
+      console.log(err);
+    }
+  }
+
+  async function onPressAPIDelete() {
+    try {
+      const response  = await
+      axios.delete("https://reqres.in/api/users/2");
+      console.log(response);
+      setDeleteStatus(response.status);
+    }
+    catch (err) {
+      setError(true);
+      console.log(err);
+    }
+  }
 
   async function onPressAPIPost() {
     
@@ -61,7 +113,12 @@ return (
 		<Text style={styles.header}>Teste de API</Text>
 		<Button onPress={onPressAPIGet} title="API Get" color="#841584" />
     <Button onPress={onPressAPIPost} title="API Post" color="#459809" />
+    <Button onPress={onPressAPIDelete} title="API Delete" color="#FF67AA" />
+    <Button onPress={onPressAPIPatch} title="API Patch" color="#006644" />
+    <Button onPress={onPressAPIAll} title="API All" color="#BBFA01" />
+    <Text>Status DELETE: {deleteStatus}</Text>
     <Text>Status POST: {postStatus}</Text>
+    <Text>Status Patch: {patchStatus}</Text>
     {error && <Text style={styles.error}>Ocorreu um erro ao chamar a API</Text>}
 	  <FlatList data={data} renderItem={renderItem} keyExtractor={item => item.id.toString()} />
 	</View>
